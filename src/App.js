@@ -1,9 +1,19 @@
 import './App.css';
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import MoviesPage from './pages/MoviesPage';
-import MovieDetailsPage from './pages/MovieDetailsPage';
+
+// Динамический импорт
+const HomePage = lazy(() =>
+  import('./pages/HomePage' /* webpackChunkName: "home-page" */),
+);
+const MoviesPage = lazy(() =>
+  import('./pages/MoviesPage' /* webpackChunkName: "movie-page" */),
+);
+const MovieDetailsPage = lazy(() =>
+  import(
+    './pages/MovieDetailsPage' /* webpackChunkName: "movie-details-page" */
+  ),
+);
 
 function App() {
   return (
@@ -16,12 +26,14 @@ function App() {
           <Link to={{ pathname: '/movies' }}>Фильмы</Link>
         </li>
       </ul>
-      <Switch>
-        <Route path="/movies/:movieId" component={MovieDetailsPage} />
-        <Route exact path="/movies" component={MoviesPage} />
-        <Route exact path="/" component={HomePage} />
-        <Route e component={HomePage} />
-      </Switch>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route path="/movies/:movieId" component={MovieDetailsPage} />
+          <Route exact path="/movies" component={MoviesPage} />
+          <Route exact path="/" component={HomePage} />
+          <Route component={HomePage} />
+        </Switch>
+      </Suspense>
     </>
   );
 }

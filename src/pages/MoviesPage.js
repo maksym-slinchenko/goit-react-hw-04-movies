@@ -12,10 +12,33 @@ export default class MoviesPage extends Component {
     totalPages: null,
   };
 
+  async componentDidMount() {
+    const query = this.props.location.search.split('=')[1];
+    if (!query) {
+      return;
+    }
+    this.addQueryToUrl(query);
+    api
+      .fetchMovies({
+        keyWord: 'search movies',
+        movieName: query,
+        pageNumber: this.state.page,
+      })
+      .then(r => {
+        this.setState({ movies: r.results, totalPages: r.total_pages });
+      })
+      .finally(this.setState({ movieNameForSearch: '' }));
+  }
+
   // Отображение значений в инпуте
   handleChange = e => {
     this.setState({ movieNameForSearch: e.currentTarget.value });
   };
+
+  // Добавление query в адресную строку
+
+  addQueryToUrl = query =>
+    this.props.history.push(`${this.props.match.url}?query=${query}`);
 
   // Внесение изменений в стэйт imageName по сабмиту формы
   handleSubmit = e => {
@@ -39,9 +62,14 @@ export default class MoviesPage extends Component {
           .then(r => {
             this.setState({ movies: r.results, totalPages: r.total_pages });
           })
-          .finally(this.setState({ movieNameForSearch: '' })),
+          .finally(
+            this.setState({ movieNameForSearch: '' }, () =>
+              this.addQueryToUrl(this.state.movieName),
+            ),
+          ),
     );
   };
+
   //   Изменения стэйта pageNumber для перелистывания стр. поиска
   //   увеличение
   handleIncreasePage = () => {
