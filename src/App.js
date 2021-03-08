@@ -1,6 +1,6 @@
 import './App.css';
 import React, { lazy, Suspense } from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Switch, Route, Link, Redirect } from 'react-router-dom';
 
 // Динамический импорт
 const HomePage = lazy(() =>
@@ -31,7 +31,7 @@ function App() {
           <Route path="/movies/:movieId" component={MovieDetailsPage} />
           <Route exact path="/movies" component={MoviesPage} />
           <Route exact path="/" component={HomePage} />
-          <Route component={HomePage} />
+          <Redirect to="/" />
         </Switch>
       </Suspense>
     </>

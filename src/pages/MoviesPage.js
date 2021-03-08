@@ -71,23 +71,25 @@ export default class MoviesPage extends Component {
   };
 
   //   Изменения стэйта pageNumber для перелистывания стр. поиска
+
+  //   функция по API-запросу и записи стэйта movies
+  changeMovies = () =>
+    api
+      .fetchMovies({
+        keyWord: 'search movies',
+        movieName: this.state.movieName,
+        pageNumber: this.state.page,
+      })
+      .then(r => {
+        this.setState({ movies: r.results });
+      });
   //   увеличение
   handleIncreasePage = () => {
     const prevPage = this.state.page;
     if (prevPage >= this.state.totalPages) {
       return;
     }
-    this.setState({ page: prevPage + 1 }, () =>
-      api
-        .fetchMovies({
-          keyWord: 'search movies',
-          movieName: this.state.movieName,
-          pageNumber: this.state.page,
-        })
-        .then(r => {
-          this.setState({ movies: r.results });
-        }),
-    );
+    this.setState({ page: prevPage + 1 }, () => this.changeMovies());
   };
   //   уменьшение
   handleReducePage = () => {
@@ -95,17 +97,7 @@ export default class MoviesPage extends Component {
     if (prevPage < 2) {
       return;
     }
-    this.setState({ page: prevPage - 1 }, () =>
-      api
-        .fetchMovies({
-          keyWord: 'search movies',
-          movieName: this.state.movieName,
-          pageNumber: this.state.page,
-        })
-        .then(r => {
-          this.setState({ movies: r.results });
-        }),
-    );
+    this.setState({ page: prevPage - 1 }, () => this.changeMovies());
   };
 
   render() {
